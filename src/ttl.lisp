@@ -3,12 +3,12 @@
 ;;;; A plain CLOS mixin over bknr.datastore's persistent-class, giving
 ;;;; any persisted class CREATED-AT/EXPIRES-AT for the cost of adding
 ;;;; it to a superclass list. Extends bknr.datastore; not part of the
-;;;; bknr project itself — see README for the naming rationale.
+;;;; bknr project itself. See README for the naming rationale.
 ;;;;
 ;;;; This is the verified, load-bearing implementation. A metaclass-
 ;;;; based alternative that would add these slots without an explicit
 ;;;; mixin is sketched in src/ttl-metaclass.lisp, but is unverified
-;;;; and lives in its own subsystem — see that file's header before
+;;;; and lives in its own subsystem. See that file's header before
 ;;;; using it.
 
 (defpackage :bknr.ttl
@@ -45,7 +45,7 @@ relative to NOW. An entry with EXPIRES-AT NIL never expires."
 
 (defvar *ttl-classes* nil
   "Class names registered via REGISTER-TTL-CLASS. SWEEP-EXPIRED walks
-exactly these classes — nothing is registered automatically, each
+exactly these classes. Nothing is registered automatically; each
 project opts its own concrete classes in explicitly.")
 
 (defun register-ttl-class (class-name)
@@ -58,7 +58,7 @@ so SWEEP-EXPIRED will walk its instances. Idempotent."
   "Returns every live instance of CLASS-NAME.
 UNVERIFIED: bknr.datastore's exact enumeration function/package for
 'every instance of this persistent class' was not confirmed against
-source in this environment — CLASS-INSTANCES is used here as the
+source in this environment. CLASS-INSTANCES is used here as the
 most likely name based on the Allegrocache/Elephant-style API
 bknr.datastore is generally modeled after. Confirm against your
 installed bknr.datastore before relying on SWEEP-EXPIRED."

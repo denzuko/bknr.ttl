@@ -1,6 +1,6 @@
 ;;;; src/ttl-metaclass.lisp
 ;;;;
-;;;; EXPERIMENTAL / UNVERIFIED — this file IS the spike, not a
+;;;; EXPERIMENTAL / UNVERIFIED. This file IS the spike, not a
 ;;;; validated implementation. Nothing in bknr.ttl's main system loads
 ;;;; or depends on it; timestamped-entry (src/ttl.lisp) is the
 ;;;; verified, load-bearing path.
@@ -12,7 +12,7 @@
 ;;;; unrelated projects (infosec tooling, network tooling, worker-agent
 ;;;; state) want the same behavior "for free."
 ;;;;
-;;;; UNRESOLVED RISK — check this before using this file for anything
+;;;; UNRESOLVED RISK. Check this before using this file for anything
 ;;;; real: bknr.datastore's own PERSISTENT-CLASS metaclass almost
 ;;;; certainly defines its own effective/direct-slot-definition
 ;;;; classes to hook (setf slot-value-using-class) for transaction
@@ -20,7 +20,7 @@
 ;;;; CLOSER-MOP:STANDARD-DIRECT-SLOT-DEFINITION instances rather than
 ;;;; bknr.datastore's own slot-definition class, which means writes to
 ;;;; CREATED-AT/EXPIRES-AT on an instance of a class using this
-;;;; metaclass may not be captured by bknr's transaction log at all —
+;;;; metaclass may not be captured by bknr's transaction log at all,
 ;;;; i.e. may silently fail to persist across a restart. This has to
 ;;;; be checked against bknr.datastore's actual source before this
 ;;;; file is used for anything, and the exact CLOSER-MOP function
