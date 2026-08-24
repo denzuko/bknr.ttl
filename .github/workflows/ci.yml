@@ -22,7 +22,7 @@ jobs:
           echo "$HOME/.roswell/bin" >> "$GITHUB_PATH"
 
       - name: Run unit suite
-        run: ros -e '(ql:quickload :bknr.ttl/tests :verbose nil)' -e '(uiop:quit (if (bknr.ttl/tests:run-tests) 0 1))'
+        run: ./tests.ros
 
   docs:
     runs-on: ubuntu-latest
@@ -39,4 +39,4 @@ jobs:
           echo "$HOME/.roswell/bin" >> "$GITHUB_PATH"
 
       - name: Confirm the manual renders
-        run: ros -e '(ql:quickload :bknr.ttl/docs :verbose nil)' -e '(bknr.ttl/docs:generate)' -e '(uiop:quit 0)'
+        run: ./docs.ros
