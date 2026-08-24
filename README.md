@@ -22,7 +22,7 @@ is what discloses who publishes this code.
 ## Why its own repository
 
 Several kinds of projects want time-to-live behavior without also
-wanting a key/value store or a job queue bundled alongside it:
+wanting a key/value store or a generic queue bundled alongside it:
 infosec tooling that expires findings, network tooling that expires
 session state, worker-agent code that expires lease records. Keeping
 this mixin out of `bknr.hashkv` means any of those projects can
