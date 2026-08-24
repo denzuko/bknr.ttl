@@ -1,26 +1,32 @@
 # bknr.ttl
 
-A CLOS mixin that gives any `bknr.datastore` persistent class
-`created-at`/`expires-at` for the cost of adding it to a superclass
-list, plus a registry-driven sweep to delete expired entries.
+bknr.ttl is a CLOS mixin that grants any `bknr.datastore` persistent
+class `created-at` and `expires-at` slots for the cost of adding it to
+a superclass list, together with a registry-driven sweep that deletes
+expired entries once they are no longer needed.
 
 ## Naming
 
-This extends `bknr.datastore`; it is not part of the bknr project
-itself. `bknr.indices`, `bknr.impex`, and `bknr.datastore` are sibling
-systems shipped from the bknr project's own repository. This one
-is not. It is `denzuko/bknr.ttl`, a separate, independently published
-project that depends on `bknr.datastore` rather than shipping from it.
-Quicklisp's system namespace is flat, not hierarchical, so nothing
-prevents the dotted name. The repo path (`denzuko/bknr.ttl`) is what
-discloses provenance.
+This library extends `bknr.datastore` rather than belonging to the
+bknr project itself. `bknr.indices`, `bknr.impex`, and
+`bknr.datastore` are sibling systems shipped from the bknr project's
+own repository, maintained under a single upstream authority;
+`bknr.ttl` does not join that project. It exists separately, at
+`denzuko/bknr.ttl`, as an independently published project that
+depends on `bknr.datastore` without shipping from it. Because
+Quicklisp's system namespace is flat rather than hierarchical,
+nothing technically prevents a dotted system name from outside the
+bknr project, which means the repository path, not the system name,
+is what discloses who publishes this code.
 
-## Why its own repo
+## Why its own repository
 
-Several projects want TTL without wanting a key/value store or a job
-queue along with it: infosec tooling, network tooling, worker-agent
-state. Keeping this out of `bknr.hashkv` means any of them can depend
-on just this.
+Several kinds of projects want time-to-live behavior without also
+wanting a key/value store or a job queue bundled alongside it:
+infosec tooling that expires findings, network tooling that expires
+session state, worker-agent code that expires lease records. Keeping
+this mixin out of `bknr.hashkv` means any of those projects can
+depend on the TTL behavior alone.
 
 ## Usage
 
@@ -31,31 +37,34 @@ on just this.
 (bknr.ttl:register-ttl-class 'my-thing)
 ```
 
-Then, periodically:
+Then, on whatever schedule the consuming project chooses:
 
 ```lisp
 (bknr.ttl:sweep-expired)   ; deletes every expired instance of every
                             ; registered class
 ```
 
-Individual callers can also check `bknr.ttl:entry-expired-p` directly
-for lazy expiry on read, rather than waiting for a sweep.
+A caller that only needs to check one entry, rather than sweep the
+whole registry, can call `bknr.ttl:entry-expired-p` directly for
+lazy expiry on read.
 
 ## Two implementations, one of them experimental
 
-- `src/ttl.lisp`: the mixin above. Plain CLOS inheritance, which is
-  well-trodden ground for `bknr.datastore`. This is what is verified
-  and load-bearing.
-- `src/ttl-metaclass.lisp` (system `bknr.ttl/metaclass-spike`): a
-  `:metaclass`-based alternative that would add TTL without an
-  explicit mixin. **Unverified.** `bknr.datastore`'s own metaclass
-  almost certainly hooks its own slot-definition classes for
+- `src/ttl.lisp` implements the mixin described above through plain
+  CLOS inheritance, which is well-trodden ground for
+  `bknr.datastore`. This is the verified, load-bearing
+  implementation.
+- `src/ttl-metaclass.lisp` (system `bknr.ttl/metaclass-spike`) sketches
+  a `:metaclass`-based alternative that would add TTL without
+  requiring an explicit mixin in a class's superclass list. This
+  path is unverified: `bknr.datastore`'s own metaclass almost
+  certainly hooks its own slot-definition classes to support
   transaction logging, and this spike injects plain
   `closer-mop:standard-direct-slot-definition` instances instead,
-  which may mean writes to the injected slots silently do not persist
-  across a restart. Check this against `bknr.datastore`'s source
-  before using it for anything real. The main `bknr.ttl` system does
-  not depend on or load this file.
+  which may mean writes to the injected slots do not persist across
+  a restart. Anyone considering this path should check it against
+  `bknr.datastore`'s source before relying on it. The main
+  `bknr.ttl` system neither depends on nor loads this file.
 
 ## Documentation
 
@@ -63,10 +72,11 @@ for lazy expiry on read, rather than waiting for a sweep.
 ros -e '(asdf:load-system :bknr.ttl/docs)(bknr.ttl/docs:generate)'
 ```
 
-Renders `@BKNR.TTL-MANUAL` (defined in `src/docs.lisp`) via
-`40ants-doc`. The exact keyword arguments accepted by
-`40ants-doc:document` have changed across that library's history.
-Confirm the current signature locally before wiring this into CI.
+This renders `@BKNR.TTL-MANUAL`, defined in `src/docs.lisp`, through
+`40ants-doc`. The keyword arguments `40ants-doc:document` accepts
+have changed across that library's history, so anyone wiring this
+into a CI pipeline should confirm the current signature locally
+first.
 
 ## Testing
 
@@ -74,14 +84,16 @@ Confirm the current signature locally before wiring this into CI.
 ros -e '(ql:quickload :bknr.ttl/tests)' -e '(bknr.ttl/tests:run-tests)'
 ```
 
-Formalizes what was verified interactively before this suite existed:
-a `timestamped-entry` subclass, one expired and one unexpired
-instance, `sweep-expired` removing exactly the expired one.
+The suite formalizes the same scenario used to validate the mixin
+before this test file existed: a `timestamped-entry` subclass with
+one expired instance and one unexpired instance, followed by a call
+to `sweep-expired` that should remove only the expired one.
 
 ## Consumers
 
-`bknr.hashkv`'s `kv-entry` and `queue-entry` are the first two
-consumers of the mixin. They are reference usage, not special cases.
+`bknr.hashkv`'s `kv-entry` and `queue-entry` classes are the first
+two consumers of this mixin, included here as reference usage rather
+than as special cases the mixin was designed around.
 
 ## License
 
