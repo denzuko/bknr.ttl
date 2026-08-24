@@ -9,7 +9,7 @@ exec ros -- $0 "$@"
 (let ((root (uiop:pathname-directory-pathname *load-pathname*)))
   (push root asdf:*central-registry*))
 
-(asdf:load-system :bknr.ttl/docs :verbose nil)
+(ql:quickload :bknr.ttl/docs :verbose nil)
 
 (defun main (&rest argv)
   "Renders bknr.ttl's manual to standard output."
