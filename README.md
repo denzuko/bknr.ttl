@@ -68,6 +68,16 @@ Renders `@BKNR.TTL-MANUAL` (defined in `src/docs.lisp`) via
 `40ants-doc:document` have changed across that library's history.
 Confirm the current signature locally before wiring this into CI.
 
+## Testing
+
+```sh
+ros -e '(ql:quickload :bknr.ttl/tests)' -e '(bknr.ttl/tests:run-tests)'
+```
+
+Formalizes what was verified interactively before this suite existed:
+a `timestamped-entry` subclass, one expired and one unexpired
+instance, `sweep-expired` removing exactly the expired one.
+
 ## Consumers
 
 `bknr.hashkv`'s `kv-entry` and `queue-entry` are the first two

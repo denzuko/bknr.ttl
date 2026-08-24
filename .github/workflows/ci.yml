@@ -7,18 +7,36 @@ on:
     branches: [develop]
 
 jobs:
-  standards:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set dps-meta git config
+
+      - name: Install Roswell, sbcl-bin, qlot
         run: |
-          git config meta.application bknr.ttl
-          git config meta.role "CLOS mixin adding CREATED-AT/EXPIRES-AT and a sweep registry to any bknr.datastore persistent class"
-          git config meta.type lisp-actor
-          git config meta.version 1.0.0
-          git config meta.branch develop
-          git config meta.licence bsd-3-clause
-      - uses: denzuko/dps-meta@v1
-        with:
-          type: lisp-actor
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libacl1-dev libcap-dev sudo python3
+          which ros || (curl -sL https://github.com/roswell/roswell/releases/download/v23.10.14.114/roswell_23.10.14.114-1_amd64.deb -o /tmp/roswell.deb && sudo dpkg -i /tmp/roswell.deb)
+          ros install sbcl-bin
+          ros install qlot
+          echo "$HOME/.roswell/bin" >> "$GITHUB_PATH"
+
+      - name: Run unit suite
+        run: ros -e '(ql:quickload :bknr.ttl/tests :verbose nil)' -e '(uiop:quit (if (bknr.ttl/tests:run-tests) 0 1))'
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Roswell, sbcl-bin, qlot
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libacl1-dev libcap-dev sudo python3
+          which ros || (curl -sL https://github.com/roswell/roswell/releases/download/v23.10.14.114/roswell_23.10.14.114-1_amd64.deb -o /tmp/roswell.deb && sudo dpkg -i /tmp/roswell.deb)
+          ros install sbcl-bin
+          ros install qlot
+          echo "$HOME/.roswell/bin" >> "$GITHUB_PATH"
+
+      - name: Confirm the manual renders
+        run: ros -e '(ql:quickload :bknr.ttl/docs :verbose nil)' -e '(bknr.ttl/docs:generate)' -e '(uiop:quit 0)'

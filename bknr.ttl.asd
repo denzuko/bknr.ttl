@@ -22,6 +22,13 @@
   :pathname "src/"
   :components ((:file "docs")))
 
+(asdf:defsystem "bknr.ttl/tests"
+  :description "FiveAM test suite for bknr.ttl."
+  :license "BSD-3-Clause"
+  :depends-on ("bknr.ttl" "fiveam" "uiop")
+  :pathname "t/"
+  :components ((:file "test")))
+
 (asdf:defsystem "bknr.ttl/metaclass-spike"
   :description "EXPERIMENTAL metaclass alternative to the timestamped-entry mixin, unverified against bknr.datastore's transaction-logging internals. Not depended on by the main bknr.ttl system. See src/ttl-metaclass.lisp header before using."
   :license "BSD-3-Clause"
