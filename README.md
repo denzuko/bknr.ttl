@@ -9,11 +9,11 @@ list, plus a registry-driven sweep to delete expired entries.
 This extends `bknr.datastore`; it is not part of the bknr project
 itself. `bknr.indices`, `bknr.impex`, and `bknr.datastore` are sibling
 systems shipped from the bknr project's own repository. This one
-isn't. It's `denzuko/bknr.ttl`, a separate, independently published
+is not. It is `denzuko/bknr.ttl`, a separate, independently published
 project that depends on `bknr.datastore` rather than shipping from it.
 Quicklisp's system namespace is flat, not hierarchical, so nothing
 prevents the dotted name. The repo path (`denzuko/bknr.ttl`) is what
-actually discloses provenance.
+discloses provenance.
 
 ## Why its own repo
 
@@ -44,7 +44,7 @@ for lazy expiry on read, rather than waiting for a sweep.
 ## Two implementations, one of them experimental
 
 - `src/ttl.lisp`: the mixin above. Plain CLOS inheritance, which is
-  well-trodden ground for `bknr.datastore`. This is what's verified
+  well-trodden ground for `bknr.datastore`. This is what is verified
   and load-bearing.
 - `src/ttl-metaclass.lisp` (system `bknr.ttl/metaclass-spike`): a
   `:metaclass`-based alternative that would add TTL without an
@@ -52,7 +52,7 @@ for lazy expiry on read, rather than waiting for a sweep.
   almost certainly hooks its own slot-definition classes for
   transaction logging, and this spike injects plain
   `closer-mop:standard-direct-slot-definition` instances instead,
-  which may mean writes to the injected slots silently don't persist
+  which may mean writes to the injected slots silently do not persist
   across a restart. Check this against `bknr.datastore`'s source
   before using it for anything real. The main `bknr.ttl` system does
   not depend on or load this file.
