@@ -19,6 +19,23 @@ nothing technically prevents a dotted system name from outside the
 bknr project, which means the repository path, not the system name,
 is what discloses who publishes this code.
 
+## Depending on bknr.ttl from your own project
+
+`bknr.ttl` is not yet published to Quicklisp or Ultralisp, so add it
+to your own project's `qlfile` as a git source. `bknr.ttl` depends
+only on `bknr.datastore`, an ordinary published Quicklisp package, so
+this one line is the only entry needed, even for a project that has
+nothing to do with `bknr.hashkv`:
+
+```
+git bknr.ttl https://github.com/denzuko/bknr.ttl.git :branch develop
+```
+
+```sh
+qlot install
+qlot exec ros -e '(ql:quickload :bknr.ttl)'
+```
+
 ## Why its own repository
 
 Several kinds of projects want time-to-live behavior without also
